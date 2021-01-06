@@ -22,8 +22,31 @@ namespace Ical.Net.DataTypes
                 }
                 else
                 {
-                    Parameters.Set("SENT-BY", (string) null);
+                    Parameters.Set("SENT-BY", (string)null);
                 }
+            }
+        }
+
+        // NON-STANDARD! used by Apple
+        private string _xemail;
+        public virtual string Email
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_xemail))
+                {
+                    _xemail = Parameters.Get("EMAIL");
+                }
+                return _xemail;
+            }
+            set
+            {
+                if (string.Equals(_xemail, value, StringComparison.OrdinalIgnoreCase))
+                {
+                    return;
+                }
+                _xemail = value;
+                Parameters.Set("EMAIL", value);
             }
         }
 
@@ -44,14 +67,14 @@ namespace Ical.Net.DataTypes
                 }
                 else
                 {
-                    Parameters.Set("DIR", (string) null);
+                    Parameters.Set("DIR", (string)null);
                 }
             }
         }
 
         public virtual Uri Value { get; set; }
 
-        public Organizer() {}
+        public Organizer() { }
 
         public Organizer(string value) : this()
         {
@@ -80,7 +103,7 @@ namespace Ical.Net.DataTypes
             {
                 return false;
             }
-            return Equals((Organizer) obj);
+            return Equals((Organizer)obj);
         }
 
         public override int GetHashCode() => Value?.GetHashCode() ?? 0;

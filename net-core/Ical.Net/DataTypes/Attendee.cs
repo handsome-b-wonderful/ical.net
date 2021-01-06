@@ -33,6 +33,29 @@ namespace Ical.Net.DataTypes
             }
         }
 
+        // NON-STANDARD! used by Apple
+        private string _xemail;
+        public virtual string Email
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_xemail))
+                {
+                    _xemail = Parameters.Get("EMAIL");
+                }
+                return _xemail;
+            }
+            set
+            {
+                if (string.Equals(_xemail, value, StringComparison.OrdinalIgnoreCase))
+                {
+                    return;
+                }
+                _xemail = value;
+                Parameters.Set("EMAIL", value);
+            }
+        }
+
         private string _commonName;
         /// <summary> CN: to show the common or displayable name associated with the calendar address </summary>
         public virtual string CommonName
@@ -226,7 +249,7 @@ namespace Ical.Net.DataTypes
         /// <summary> Uri associated with the attendee, typically an email address </summary>
         public virtual Uri Value { get; set; }
 
-        public Attendee() {}
+        public Attendee() { }
 
         public Attendee(Uri attendee)
         {
@@ -243,7 +266,7 @@ namespace Ical.Net.DataTypes
         }
 
         //ToDo: See if this can be deleted
-        public override void CopyFrom(ICopyable obj) {}
+        public override void CopyFrom(ICopyable obj) { }
 
         protected bool Equals(Attendee other) => Equals(SentBy, other.SentBy)
             && string.Equals(CommonName, other.CommonName, StringComparison.OrdinalIgnoreCase)
@@ -262,7 +285,7 @@ namespace Ical.Net.DataTypes
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((Attendee) obj);
+            return Equals((Attendee)obj);
         }
 
         public override int GetHashCode()

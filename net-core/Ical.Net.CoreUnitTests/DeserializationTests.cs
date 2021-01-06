@@ -505,5 +505,62 @@ END:VCALENDAR
                 Assert.AreEqual("2." + i, props[i].Value);
             }
         }
+
+        [Test, Category("Deserialization")]
+        public void AppleEmailonAttendees()
+        {
+            var input = @"BEGIN:VCALENDAR
+PRODID:-//CALENDARSERVER.ORG//NONSGML Version 1//EN
+METHOD:REQUEST
+VERSION:2.0
+BEGIN:VEVENT
+ATTENDEE;CN=Katherine Dochstader;CUTYPE=INDIVIDUAL;PARTSTAT=ACCEPTED;EMAI
+ L=ikate@dochstader.com:/aMTEwMzExMzc4MTEwMzExM0CrZ293zCUtqEyCjvFYsZCCW_I
+ cch3o8irLy2zhpbH1/principal/
+ATTENDEE;CN=handsome.b@dochstader.com;CUTYPE=INDIVIDUAL;EMAIL=handsome.b@
+ dochstader.com:mailto:handsome.b@dochstader.com
+ATTENDEE;CN=hello@marigoldapp.com;CUTYPE=INDIVIDUAL;EMAIL=hello@marigolda
+ pp.com:mailto:hello@marigoldapp.com
+CREATED:20210105T160642Z
+DTEND;TZID=America/Edmonton:20210107T100000
+DTSTAMP:20210105T160643Z
+DTSTART;TZID=America/Edmonton:20210107T090000
+LAST-MODIFIED:20210105T160642Z
+ORGANIZER;CN=Katherine Dochstader;EMAIL=ikate@dochstader.com:mailto:2_GEY
+ TAMZRGEZTOOBRGEYDGMJRGP36H7HJJBEUELL4WDICIFB4CZINUBWCHLR5HHZ33VCVBHQ26BL
+ US@imip.me.com
+RRULE:FREQ=WEEKLY
+SEQUENCE:0
+SUMMARY:Testeroo - Thur AM
+UID:4F498C0C-FCC9-4D77-86CA-61E051796D17
+URL;VALUE=URI:
+END:VEVENT
+END:VCALENDAR";
+
+            var iCal = Calendar.Load(input);
+            Assert.AreEqual(1, iCal.Events.Count);
+
+            var evt = iCal.Events.First();
+            // Ensure there are 3 attendees
+            Assert.AreEqual(3, evt.Attendees.Count);
+
+            var organizer = evt.Organizer;
+            Assert.AreEqual("Katherine Dochstader", organizer.CommonName);
+            Assert.AreEqual("ikate@dochstader.com", organizer.Email);
+            Assert.AreEqual("mailto:2_GEYTAMZRGEZTOOBRGEYDGMJRGP36H7HJJBEUELL4WDICIFB4CZINUBWCHLR5HHZ33VCVBHQ26BLUS@imip.me.com", organizer.Value.ToString());
+
+            var attendee1 = evt.Attendees[0];
+            Assert.AreEqual("Katherine Dochstader", attendee1.CommonName);
+            Assert.AreEqual("ikate@dochstader.com", attendee1.Email);
+            Assert.AreEqual("mailto:/aMTEwMzExMzc4MTEwMzExM0CrZ293zCUtqEyCjvFYsZCCW_Icch3o8irLy2zhpbH1/principal/", attendee1.Value.ToString());
+            var attendee2 = evt.Attendees[1];
+            Assert.AreEqual("handsome.b@dochstader.com", attendee2.CommonName);
+            Assert.AreEqual("handsome.b@dochstader.com", attendee2.Email);
+            Assert.AreEqual("mailto:handsome.b@dochstader.com", attendee2.Value.ToString());
+            var attendee3 = evt.Attendees[2];
+            Assert.AreEqual("hello@marigoldapp.com", attendee3.CommonName);
+            Assert.AreEqual("hello@marigoldapp.com", attendee3.Email);
+            Assert.AreEqual("mailto:hello@marigoldapp.com", attendee3.Value.ToString());
+        }
     }
 }
